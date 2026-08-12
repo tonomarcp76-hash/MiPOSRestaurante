@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiPOS Restaurante 🍽️</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: #d32f2f; margin-bottom: 30px; }
+        .nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .nav button { padding: 15px 25px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-mesas { background: #4CAF50; color: white; }
+        .btn-catalogo { background: #2196F3; color: white; }
+        .btn-ventas { background: #FF9800; color: white; }
+        .btn-reportes { background: #9C27B0; color: white; }
+        .btn-salir { background: #607D8B; color: white; }
+        .section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
+        .section.active { display: block; }
+        h2 { color: #333; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .grid-mesas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .mesa { background: #e8f5e9; padding: 25px; border-radius: 12px; text-align: center; cursor: pointer; border: 3px solid transparent; transition: 0.3s; }
+        .mesa:hover { border-color: #4CAF50; transform: scale(1.05); }
+        .mesa.activa { background: #c8e6c9; border-color: #2e7d32; }
+        .mesa h3 { font-size: 28px; color: #2e7d32; margin-bottom: 10px; }
+        .mesa p { color: #555; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .btn-guardar { background: #4CAF50; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .lista-productos { margin-top: 25px; }
+        .producto { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f9f9f9; border-radius: 8px; margin-bottom: 10px; }
+        .btn-eliminar { background: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+        
+        .seleccion-mesa { margin-bottom: 20px; }
+        .comanda { margin-top: 20px; }
+        .item-comanda { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .total { font-size: 24px; font-weight: bold; text-align: right; margin-top: 20px; color: #d32f2f; }
+        .btn-cobrar { background: #f44336; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%; }
+        
+        .reporte-item { padding: 15px; border-bottom: 1px solid #eee; }
+        .fecha { font-weight: bold; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍽️ MiPOS Restaurante</h1>
+        
+        <div class="nav">
+            <button class="btn-mesas" onclick="mostrarSeccion('mesas')">🪑 Mesas</button>
+            <button class="btn-catalogo" onclick="mostrarSeccion('catalogo')">📋 Catálogo</button>
+            <button class="btn-ventas" onclick="mostrarSeccion('ventas')">💰 Ventas</button>
+            <button class="btn-reportes" onclick="mostrarSeccion('reportes')">📊 Reportes</button>
+            <button class="btn-salir" onclick="mostrarSeccion('salir')">🚪 Salir</button>
+        </div>
+
+        <div id="mesas" class="section active">
+            <h2>🪑 Control de Mesas</h2>
+            <div class="grid-mesas">
+                <div class="mesa" onclick="seleccionarMesa(1)">
+                    <h3>Mesa 1</h3>
+                    <p id="estado-mesa-1">Libre</p>
+                </div>
+                <div class="mesa" onclick="seleccionarMesa(2)">
+                    <h3>Mesa 2</h3>
+                    <p id="estado-mesa-2">Libre</p>
+                </div>
+                <div class="mesa" onclick="seleccionarMesa(3)">
+                    <h3>Mesa 3</h3>
+                    <p id="estado-mesa-3">Libre</p>
+                </div>
+                <div class="mesa" onclick="seleccionarMesa(4)">
+                    <h3>Mesa 4</h3>
+                    <p id="estado-mesa-4">Libre</p>
+                </div>
+                <div class="mesa" onclick="seleccionarMesa(5)">
+                    <h3>Mesa 5</h3>
+                    <p id="estado-mesa-5">Libre</p>
+                </div>
+                <div class="mesa" onclick="seleccionarMesa(6)">
+                    <h3>Mesa 6</h3>
+                    <p id="estado-mesa-6">Libre</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="catalogo" class="section">
+            <h2>📋 Catálogo de Productos</h2>
+            <div class="form-group">
+                <label>Nombre del platillo:</label>
+                <input type="text" id="nombre-platillo" placeholder="Ej: Hamburguesa">
+            </div>
+            <div class="form-group">
+                <label>Precio ($):</label>
+                <input type="number" id="precio-platillo" placeholder="150" step="0.01">
+            </div>
+            <button class="btn-guardar" onclick="agregarProducto()">✅ Guardar Producto</button>
+            
+            <div class="lista-productos">
+                <h3>Productos Registrados</h3>
+                <div id="lista-productos"></div>
+            </div>
+        </div>
+
+        <div id="ventas" class="section">
+            <h2>💰 Punto de Venta</h2>
+            <div class="seleccion-mesa">
+                <label>Mesa seleccionada:</label>
+                <input type="number" id="mesa-activa" placeholder="N° de mesa" min="1" max="6">
+            </div>
+            <div class="form-group">
+                <label>Seleccionar producto:</label>
+                <select id="producto-venta" style="width:100%; padding:12px; border-radius:8px; border:2px solid #ddd; font-size:16px;">
+                    <option value="">-- Elige un producto --</option>
+                </select>
+            </div>
+            <button class="btn-guardar" onclick="agregarAComanda()">➕ Agregar a Comanda</button>
+            
+            <div class="comanda">
+                <h3>Comanda de la Mesa <span id="numero-mesa-comanda">--</span></h3>
+                <div id="lista-comanda"></div>
+                <div class="total">Total: $<span id="total-comanda">0.00</span></div>
+                <button class="btn-cobrar" onclick="cobrarComanda()">💵 Cobrar e Imprimir Ticket</button>
+            </div>
+        </div>
+
+        <div id="reportes" class="section">
+            <h2>📊 Reporte de Ventas</h2>
+            <div id="lista-reportes"></div>
+        </div>
+
+        <div id="salir" class="section">
+            <h2>🚪 Salir del Sistema</h2>
+            <p style="font-size:18px; text-align:center; margin-top:50px;">¿Seguro que deseas salir?</p>
+            <button class="btn-cobrar" onclick="location.reload()" style="max-width:300px; margin:30px auto; display:block;">✅ Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyB1EDKLJIiSgCUEHTMAGuom7Bjtx",
+        authDomain: "miposrestaurante.firebaseapp.com",
+        projectId: "miposrestaurante",
+        storageBucket: "miposrestaurante.appspot.com",
+        messagingSenderId: "566260388606",
+        appId: "1:566260388606:web:f062cc1368c9c5234dd62f"
+      };
+      
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      console.log("✅ Conectado a Firebase - MiPOSRestaurante ☁️");
+    </script>
+
+    <script>
+        let comanda = [];
+        let mesaActual = null;
+        let productos = [];
+
+        function mostrarSeccion(nombre) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(nombre).classList.add('active');
+            if(nombre === 'ventas') cargarProductosEnSelect();
+            if(nombre === 'reportes') cargarReportes();
+        }
+
+        function seleccionarMesa(numero) {
+            document.querySelectorAll('.mesa').forEach(m => m.classList.remove('activa'));
+            mesaActual = numero;
+            document.getElementById('mesa-activa').value = numero;
+            document.getElementById('numero-mesa-comanda').textContent = numero;
+            mostrarSeccion('ventas');
+        }
+
+        async function agregarProducto() {
+            const nombre = document.getElementById('nombre-platillo').value.trim();
+            const precio = parseFloat(document.getElementById('precio-platillo').value);
+            
+            if(!nombre || !precio) { alert('⚠️ Escribe el nombre y precio'); return; }
+
+            await db.collection('productos').add({
+                nombre: nombre,
+                precio: precio,
+                fecha: new Date()
+            });
+
+            document.getElementById('nombre-platillo').value = '';
+            document.getElementById('precio-platillo').value = '';
+            cargarProductos();
+            alert('✅ Producto guardado correctamente! 📋');
+        }
+
+        async function cargarProductos() {
+            const lista = document.getElementById('lista-productos');
+            lista.innerHTML = '';
+            productos = [];
+            
+            const snapshot = await db.collection('productos').get();
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                p.id = doc.id;
+                productos.push(p);
+                lista.innerHTML += `
+                    <div class="producto">
+                        <div>
+                            <strong>${p.nombre}</strong> - $${p.precio.toFixed(2)}
+                        </div>
+                        <button class="btn-eliminar" onclick="eliminarProducto('${doc.id}')">🗑️ Eliminar</button>
+                    </div>
+                `;
+            });
+        }
+
+        function cargarProductosEnSelect() {
+            const select = document.getElementById('producto-venta');
+            select.innerHTML = '<option value="">-- Elige un producto --</option>';
+            productos.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.nombre} - $${p.precio.toFixed(2)}</option>`;
+            });
+        }
+
+        async function eliminarProducto(id) {
+            if(!confirm('¿Eliminar este producto?')) return;
+            await db.collection('productos').doc(id).delete();
+            cargarProductos();
+        }
+
+        function agregarAComanda() {
+            const select = document.getElementById('producto-venta');
+            const idProducto = select.value;
+            const mesa = parseInt(document.getElementById('mesa-activa').value);
+            
+            if(!idProducto || !mesa) { alert('⚠️ Selecciona mesa y producto'); return; }
+
+            const producto = productos.find(p => p.id === idProducto);
+            comanda.push({...producto, mesa: mesa});
+            actualizarComanda();
+            select.value = '';
+        }
+
+        function actualizarComanda() {
+            const lista = document.getElementById('lista-comanda');
+            const totalEl = document.getElementById('total-comanda');
+            lista.innerHTML = '';
+            let total = 0;
+
+            comanda.forEach((item, index) => {
+                total += item.precio;
+                lista.innerHTML += `
+                    <div class="item-comanda">
+                        <span>${item.nombre}</span>
+                        <span>$${item.precio.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            totalEl.textContent = total.toFixed(2);
+        }
+
+        async function cobrarComanda() {
+            const mesa = parseInt(document.getElementById('mesa-activa').value);
+            if(comanda.length === 0 || !mesa) { alert('⚠️ No hay productos en la comanda'); return; }
+
+            const total = comanda.reduce((sum, i) => sum + i.precio, 0);
+            
+            await db.collection('ventas').add({
+                mesa: mesa,
+                productos: comanda,
+                total: total,
+                fecha: new Date()
+            });
+
+            document.getElementById(`estado-mesa-${mesa}`).textContent = 'Ocupada';
+            document.getElementById(`estado-mesa-${mesa}`).style.color = '#d32f2f';
+
+            alert(`✅ Ticket impreso!\nMesa: ${mesa}\nTotal: $${total.toFixed(2)}\n🧾 ¡Venta guardada en la nube! ☁️`);
+            
+            comanda = [];
+            actualizarComanda();
+            document.getElementById('mesa-activa').value = '';
+            document.getElementById('numero-mesa-comanda').textContent = '--';
+        }
+
+        async function cargarReportes() {
+            const lista = document.getElementById('lista-reportes');
+            lista.innerHTML = '<h3>Ventas Realizadas</h3>';
+            
+            const snapshot = await db.collection('ventas').orderBy('fecha', 'desc').limit(20).get();
+            snapshot.forEach(doc => {
+                const v = doc.data();
+                const fecha = v.fecha.toDate();
+                lista.innerHTML += `
+                    <div class="reporte-item">
+                        <div class="fecha">📅 ${fecha.toLocaleDateString()} - ${fecha.toLocaleTimeString()}</div>
+                        <div>🪑 Mesa: ${v.mesa}</div>
+                        <div>🍽️ Productos: ${v.productos.length}</div>
+                        <div><strong>💰 Total: $${v.total.toFixed(2)}</strong></div>
+                    </div>
+                `;
+            });
+        }
+
+        cargarProductos();
+    </script>
+</body>
+</html>
