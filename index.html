@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: #f5f5f5; padding: 20px; }
         
-        /* PANTALLA DE LOGIN */
+        /* 🔐 PANTALLA DE INICIO DE SESIÓN */
         #pantalla-login {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
@@ -26,14 +26,22 @@
             border-radius: 8px; font-size: 16px; transition: border 0.3s;
         }
         .grupo-input input:focus { outline: none; border-color: #d32f2f; }
+        
+        .botones-login { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
         .btn-login {
             width: 100%; padding: 15px; background: #d32f2f; color: white; border: none;
             border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.3s;
         }
         .btn-login:hover { background: #b71c1c; }
-        #mensaje-error { color: #d32f2f; text-align: center; margin-top: 15px; display: none; font-weight: bold; }
+        .btn-registrar {
+            background: #2196F3;
+        }
+        .btn-registrar:hover { background: #1976D2; }
+        .mensaje { text-align: center; margin-top: 15px; font-weight: bold; display: none; }
+        .error { color: #d32f2f; }
+        .exito { color: #2e7d32; }
 
-        /* SISTEMA PRINCIPAL */
+        /* 🍽️ SISTEMA PRINCIPAL */
         #sistema-principal { display: none; }
         .cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .cabecera h1 { color: #d32f2f; font-size: 28px; }
@@ -56,13 +64,12 @@
         .btn-catalogo { background: #2196F3; color: white; }
         .btn-ventas { background: #FF9800; color: white; }
         .btn-reportes { background: #9C27B0; color: white; }
-        .btn-salir-nav { background: #607D8B; color: white; }
 
         .section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
         .section.active { display: block; }
         h2 { color: #333; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
 
-        /* MESAS */
+        /* 🪑 MESAS */
         .grid-mesas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .mesa {
             background: #e8f5e9; padding: 30px; border-radius: 12px;
@@ -74,7 +81,7 @@
         .mesa.ocupada h3 { color: #c62828; }
         .mesa p { color: #555; font-size: 16px; }
 
-        /* CATÁLOGO */
+        /* 📋 CATÁLOGO */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
         input, select {
@@ -97,7 +104,7 @@
         }
         .btn-eliminar:hover { background: #d32f2f; }
 
-        /* VENTAS */
+        /* 💰 VENTAS */
         .seleccion-mesa { margin-bottom: 20px; }
         .comanda { margin-top: 25px; }
         .item-comanda {
@@ -111,7 +118,7 @@
         }
         .btn-cobrar:hover { background: #b71c1c; }
 
-        /* REPORTES */
+        /* 📊 REPORTES */
         .reporte-item { padding: 15px; border-bottom: 1px solid #eee; }
         .fecha { font-weight: bold; color: #666; margin-bottom: 5px; }
         .monto { font-size: 18px; font-weight: bold; color: #d32f2f; }
@@ -119,20 +126,27 @@
 </head>
 <body>
 
-<!-- 🔐 PANTALLA DE INICIO DE SESIÓN -->
+<!-- 🔐 PANTALLA DE INICIO DE SESIÓN — SOLO USUARIO + CONTRASEÑA -->
 <div id="pantalla-login">
     <div class="caja-login">
-        <h2>🔐 Iniciar Sesión</h2>
+        <h2>🔐 MiPOS Restaurante</h2>
+        
         <div class="grupo-input">
-            <label>📧 Correo electrónico:</label>
-            <input type="email" id="correo" placeholder="tu@correo.com">
+            <label>👤 Nombre de Usuario:</label>
+            <input type="text" id="usuario" placeholder="Escribe tu nombre" onkeypress="if(event.key==='Enter')document.getElementById('contrasena').focus()">
         </div>
+        
         <div class="grupo-input">
             <label>🔑 Contraseña:</label>
-            <input type="password" id="contrasena" placeholder="••••••••" onkeypress="if(event.key==='Enter')iniciarSesion()">
+            <input type="password" id="contrasena" placeholder="Escribe tu contraseña" onkeypress="if(event.key==='Enter')iniciarSesion()">
         </div>
-        <button class="btn-login" onclick="iniciarSesion()">✅ Entrar al Sistema</button>
-        <p id="mensaje-error">❌ Correo o contraseña incorrectos</p>
+
+        <div class="botones-login">
+            <button class="btn-login" onclick="iniciarSesion()">✅ Iniciar Sesión</button>
+            <button class="btn-login btn-registrar" onclick="registrarUsuario()">🆕 Registrarse</button>
+        </div>
+
+        <p id="mensaje-login" class="mensaje error"></p>
     </div>
 </div>
 
@@ -207,7 +221,7 @@
         <h2>💰 Punto de Venta</h2>
         <div class="seleccion-mesa">
             <label>Mesa seleccionada:</label>
-            <input type="number" id="mesa-activa" placeholder="Selecciona una mesa desde la pestaña anterior" readonly>
+            <input type="number" id="mesa-activa" placeholder="Selecciona una mesa" readonly>
         </div>
         <div class="form-group">
             <label>Producto:</label>
@@ -231,73 +245,128 @@
     </div>
 </div>
 
-<!-- ☁️ FIREBASE CON INICIO DE SESIÓN -->
+<!-- ☁️ FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
 <script>
-// 🔑 TUS LLAVES DE FIREBASE (YA ESTÁN AQUÍ INTEGRADAS)
+// 🔑 TUS LLAVES DE FIREBASE — PÓN LAS TUYAS SI LAS CAMBIASTE
 const firebaseConfig = {
     apiKey: "AIzaSyB1EDKLJIiSgCUEHTMAGuom7Bjtx",
-    authDomain: "miposrestaurante-xxxxxx.firebaseapp.com",
+    authDomain: "miposrestaurante.firebaseapp.com",
     projectId: "miposrestaurante",
     storageBucket: "miposrestaurante.appspot.com",
-    messagingSenderId: "xxxxxxxx",
-    appId: "1:xxxxxxxx:web:xxxxxx"
+    messagingSenderId: "336941881690",
+    appId: "1:336941881690:web:abc123def456"
 };
-
-// ⚠️ IMPORTANTE: Si las llaves de arriba no funcionan,
-// ⚠️ COPIA tus llaves REALES desde Firebase Console y pégalas arriba 👆
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const auth = firebase.auth();
 
-// 🔐 VERIFICAR SI YA HAY SESIÓN ACTIVA
-auth.onAuthStateChanged((usuario) => {
-    if (usuario) {
-        document.getElementById('pantalla-login').style.display = 'none';
-        document.getElementById('sistema-principal').style.display = 'block';
-        document.getElementById('nombre-usuario').textContent = usuario.email;
-        cargarProductos();
-        cargarReportes();
-    } else {
-        document.getElementById('pantalla-login').style.display = 'flex';
-        document.getElementById('sistema-principal').style.display = 'none';
-    }
-});
+// 👤 USUARIO ACTIVO
+let usuarioActivo = localStorage.getItem('usuarioActivo') || null;
 
-// 🔐 INICIAR SESIÓN
-function iniciarSesion() {
-    const correo = document.getElementById('correo').value;
+// ✅ SI YA HABÍA SESIÓN ABIERTA → ENTRAR DIRECTO
+if (usuarioActivo) {
+    entrarAlSistema(usuarioActivo);
+}
+
+// 🆕 REGISTRAR NUEVO USUARIO
+async function registrarUsuario() {
+    const usuario = document.getElementById('usuario').value.trim();
     const contrasena = document.getElementById('contrasena').value;
-    const error = document.getElementById('mensaje-error');
+    const mensaje = document.getElementById('mensaje-login');
     
-    if (!correo || !contrasena) {
-        error.style.display = 'block';
+    if (!usuario || !contrasena) {
+        mensaje.textContent = '⚠️ Escribe un nombre y una contraseña';
+        mensaje.style.display = 'block';
+        mensaje.className = 'mensaje error';
         return;
     }
     
-    auth.signInWithEmailAndPassword(correo, contrasena)
-        .then((credencial) => {
-            error.style.display = 'none';
-        })
-        .catch((err) => {
-            error.style.display = 'block';
-            setTimeout(() => error.style.display = 'none', 4000);
-        });
+    if (contrasena.length < 4) {
+        mensaje.textContent = '⚠️ La contraseña debe tener al menos 4 caracteres';
+        mensaje.style.display = 'block';
+        return;
+    }
+    
+    // Verificar si ya existe el usuario
+    const snapshot = await db.collection('usuarios').doc(usuario).get();
+    if (snapshot.exists) {
+        mensaje.textContent = '⚠️ Este nombre de usuario ya existe. Elige otro.';
+        mensaje.style.display = 'block';
+        return;
+    }
+    
+    // Guardar usuario nuevo
+    await db.collection('usuarios').doc(usuario).set({
+        usuario: usuario,
+        contrasena: contrasena,
+        fechaRegistro: new Date()
+    });
+    
+    mensaje.textContent = '✅ ¡Usuario creado con éxito! Ahora puedes entrar';
+    mensaje.style.display = 'block';
+    mensaje.className = 'mensaje exito';
+    setTimeout(() => mensaje.style.display = 'none', 3000);
 }
 
-// 🔐 CERRAR SESIÓN
+// 🔐 INICIAR SESIÓN
+async function iniciarSesion() {
+    const usuario = document.getElementById('usuario').value.trim();
+    const contrasena = document.getElementById('contrasena').value;
+    const mensaje = document.getElementById('mensaje-login');
+    
+    if (!usuario || !contrasena) {
+        mensaje.textContent = '⚠️ Escribe tu usuario y contraseña';
+        mensaje.style.display = 'block';
+        return;
+    }
+    
+    // Buscar usuario en la base de datos
+    const doc = await db.collection('usuarios').doc(usuario).get();
+    
+    if (!doc.exists) {
+        mensaje.textContent = '❌ Usuario no encontrado. Presiona "Registrarse" primero.';
+        mensaje.style.display = 'block';
+        return;
+    }
+    
+    const datos = doc.data();
+    if (datos.contrasena !== contrasena) {
+        mensaje.textContent = '❌ Contraseña incorrecta';
+        mensaje.style.display = 'block';
+        return;
+    }
+    
+    // ✅ ¡ENTRÓ!
+    localStorage.setItem('usuarioActivo', usuario);
+    entrarAlSistema(usuario);
+}
+
+// 🚪 ENTRAR AL SISTEMA
+function entrarAlSistema(usuario) {
+    usuarioActivo = usuario;
+    document.getElementById('pantalla-login').style.display = 'none';
+    document.getElementById('sistema-principal').style.display = 'block';
+    document.getElementById('nombre-usuario').textContent = '👤 ' + usuario;
+    document.getElementById('usuario').value = '';
+    document.getElementById('contrasena').value = '';
+    document.getElementById('mensaje-login').style.display = 'none';
+    
+    cargarProductos();
+    cargarReportes();
+}
+
+// 🚪 CERRAR SESIÓN
 function cerrarSesion() {
-    auth.signOut().then(() => {
-        document.getElementById('correo').value = '';
-        document.getElementById('contrasena').value = '';
-        comanda = [];
-        mesaActual = null;
-        actualizarComanda();
-    });
+    localStorage.removeItem('usuarioActivo');
+    usuarioActivo = null;
+    document.getElementById('pantalla-login').style.display = 'flex';
+    document.getElementById('sistema-principal').style.display = 'none';
+    comanda = [];
+    mesaActual = null;
+    actualizarComanda();
 }
 
 // 📋 VARIABLES DEL SISTEMA
@@ -333,6 +402,7 @@ async function agregarProducto() {
     await db.collection('productos').add({
         nombre: nombre,
         precio: precio,
+        usuario: usuarioActivo,
         fecha: new Date()
     });
     
@@ -427,21 +497,16 @@ async function cobrarComanda() {
     }
     
     const total = comanda.reduce((sum, i) => sum + i.precio, 0);
-    const usuario = auth.currentUser ? auth.currentUser.email : 'Anónimo';
     
     await db.collection('ventas').add({
         mesa: mesaActual,
         productos: [...comanda],
         total: total,
-        usuario: usuario,
+        usuario: usuarioActivo,
         fecha: new Date()
     });
     
-    // Marcar mesa como ocupada/libre
-    document.getElementById(`mesa-${mesaActual}`).classList.add('ocupada');
-    document.getElementById(`estado-mesa-${mesaActual}`).textContent = '🔴 Ocupada';
-    
-    alert(`✅ Ticket generado!\nMesa: ${mesaActual}\nTotal: $${total.toFixed(2)}\n🧾 Venta guardada`);
+    alert(`✅ Ticket generado!\nMesa: ${mesaActual}\nTotal: $${total.toFixed(2)}\n🧾 Venta guardada por ${usuarioActivo}`);
     
     // Limpiar
     comanda = [];
